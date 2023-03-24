@@ -693,25 +693,26 @@ def jsonNotes(notes):
         value.append([it[0],it[1],it[2]])
     return (value)
 
-@app.route('/getTabs/1', methods=['GET', 'POST'])
+@app.route('/getTabs', methods=['GET', 'POST'])
 def getTabs():
     data = request.get_json()
-    print(data)
+    # print(data)
     url = data["url"]
     filename = data["filename"]
+    tracks = int(data["track"])
 
     r = requests.get(url, allow_redirects=True)
     open(filename, 'wb').write(r.content)
     
-    path = "test2.mid"
+    path = filename
     mid=MIDIParser(path)
-    mid.get_tracks()
-    tracks = 1
+    # print(mid.get_tracks())
+    
 
     mid = MIDIParser(path, track=tracks)
     
     #redering tabs
-    # mid.render_tabs()
+    mid.render_tabs()
     tabs = Tabs(notes=mid.notes_played(), key=mid.get_key())
     
     #generation notes
@@ -733,6 +734,22 @@ def getTabs():
             "key":key[1]
         }
     )
+
+@app.route('/getTracks', methods=['GET', 'POST'])
+def getTracks():
+    data = request.get_json()
+    print(data)
+    url = data["url"]
+    filename = data["filename"]
+
+    r = requests.get(url, allow_redirects=True)
+    open(filename, 'wb').write(r.content)
+    
+    path = filename
+    mid=MIDIParser(path)
+    import json
+    return json.dumps(mid.get_tracks())
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=105)
