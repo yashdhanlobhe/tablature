@@ -465,7 +465,6 @@ from music21 import scale
 
 from tayuya import constants
 
-import requests
 
 from flask import request
 
