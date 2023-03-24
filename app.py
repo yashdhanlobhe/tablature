@@ -711,7 +711,7 @@ def getTabs():
     mid = MIDIParser(path, track=tracks)
     
     #redering tabs
-    mid.render_tabs()
+    # mid.render_tabs()
     tabs = Tabs(notes=mid.notes_played(), key=mid.get_key())
     
     #generation notes
@@ -723,9 +723,9 @@ def getTabs():
     #generate key
     key = mid.get_key()
 
-    print("notes" , notes)
-    print("tabFinal" , tabfinal)
-    print("key" , key)
+    # print("notes" , notes)
+    # print("tabFinal" , tabfinal)
+    # print("key" , key)
     import json
     return json.dumps(
         {
