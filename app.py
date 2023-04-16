@@ -1,8 +1,9 @@
 from flask import Flask
-import tabs
 import requests
 from flask import request
 import genere_prediction
+from tabs import MIDIParser, jsonNotes
+from tayuya.tabs import Tabs
 
 app = Flask(__name__)
 
@@ -18,11 +19,12 @@ def getTabs():
     open(filename, 'wb').write(r.content)
     
     path = filename
-    mid=tabs.MIDIParser(path)
+    mid=MIDIParser(path)
 
-    mid = tabs.MIDIParser(path, track=tracks)
+    mid = MIDIParser(path, track=tracks)
     mid.render_tabs()
-    tabs = tabs.Tabs(notes=mid.notes_played(), key=mid.get_key())
+
+    tabs = Tabs(notes=mid.notes_played(), key=mid.get_key())
     
     notes = tabs.generate_notes() #(note, string, fret)
 
@@ -33,7 +35,7 @@ def getTabs():
     import json
     return json.dumps(
         {
-            "notes" : tabs.jsonNotes(notes),
+            "notes" : jsonNotes(notes),
             "key":key[1]
         }
     )
@@ -49,7 +51,7 @@ def getTracks():
     open(filename, 'wb').write(r.content)
     
     path = filename
-    mid=tabs.MIDIParser(path)
+    mid= MIDIParser(path)
     import json
     return json.dumps(mid.get_tracks())
 
