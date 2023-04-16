@@ -2,3 +2,6 @@ tayuya
 flask
 requests
 gunicorn
+numpy
+librosa
+joblib
