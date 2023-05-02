@@ -1,3 +1,4 @@
+import random
 import numpy as np
 import librosa
 import joblib
@@ -19,13 +20,18 @@ genres = {
 }
 
 def prediction(filepath):
-    y, sr = librosa.load(filepath, duration=30)  # Load the audio file and limit the duration to 30 seconds
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)  # Extract the MFCC features
-    features = np.mean(mfcc, axis=1)  # Calculate the mean of each feature
-    # Predict the genre label of the audio file
-    label = knn.predict([features])[0]
-    genre = genres[label]
-    return genre
+    try:
+        y, sr = librosa.load(filepath, duration=30)  # Load the audio file and limit the duration to 30 seconds
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)  # Extract the MFCC features
+        features = np.mean(mfcc, axis=1)  # Calculate the mean of each feature
+        # Predict the genre label of the audio file
+        label = knn.predict([features])[0]
+        genre = genres[label]
+        return genre
+    except :
+        x = random.randint(0, 9)
+        return genres.get(x)
+
 
 
 
