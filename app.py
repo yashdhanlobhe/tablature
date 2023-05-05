@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 import requests
 from flask import request
 import genere_prediction
@@ -6,6 +6,20 @@ from tabs import MIDIParser, jsonNotes
 from tayuya.tabs import Tabs
 
 app = Flask(__name__)
+
+
+def makeResponse(res):
+    return Response(
+        headers={
+            'Access-Control-Allow-Origin': '*',
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            },
+        response=res,
+        status=200,
+        content_type='application/json'
+    )
 
 
 @app.route('/getTabs', methods=['GET', 'POST'])
@@ -23,7 +37,6 @@ def getTabs():
         mid=MIDIParser(path)
 
         mid = MIDIParser(path, track=tracks)
-        mid.render_tabs()
 
         tabs = Tabs(notes=mid.notes_played(), key=mid.get_key())
 
@@ -32,26 +45,21 @@ def getTabs():
         tabfinal = mid.get_tabs()
 
         key = mid.get_key()
-        print({
-                "notes" : jsonNotes(notes),
-                "key":key[1]
-            })
         import json
-        return json.dumps(
+        return makeResponse(json.dumps(
             {
                 "notes" : jsonNotes(notes),
                 "key":key[1]
             }
-        )
+        ))
     except:
-        return json.dumps(sampleResult)
+        return makeResponse(json.dumps(sampleResult))
 
 
 @app.route('/getTracks', methods=['GET', 'POST'])
 def getTracks():
     try:
         data = request.get_json()
-        # print(data)
         url = data["url"]
         filename = data["filename"]
 
@@ -62,11 +70,9 @@ def getTracks():
         mid= MIDIParser(path)
         import json
 
-        print(mid.get_tracks())
-        return json.dumps(mid.get_tracks())
+        return makeResponse(json.dumps(mid.get_tracks()))
     except:
-        return json.dumps({0: 'Wikipedia MIDI (extended)', 1: 'Bass', 2: 'Piano', 3: 'Hi-hat only', 4: 'Drums', 5: 'Jazz Guitar'})
-
+        return makeResponse(json.dumps({0: 'Wikipedia MIDI (extended)', 1: 'Bass', 2: 'Piano', 3: 'Hi-hat only', 4: 'Drums', 5: 'Jazz Guitar'}))
 
 
 @app.route('/getGenre', methods=['GET', 'POST'])
@@ -83,7 +89,7 @@ def getGenre():
         path = filename
         result = genere_prediction.prediction(path)
         import json
-        return json.dumps({'result':result})
+        return makeResponse(json.dumps({'result':result}))
     except:
         import random
         genres = {
@@ -100,7 +106,7 @@ def getGenre():
         }
 
         x = random.randint(0, 9)
-        return genres.get(x)
+        return makeResponse(genres.get(x))
 
 
 
